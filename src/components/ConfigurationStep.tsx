@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 import { Configuration, Manufacturer } from '../types';
 import { DOOR_TYPES_CONFIG, MANUFACTURER_CONFIG } from '../constants';
@@ -64,7 +65,8 @@ export const ConfigurationStep: React.FC<ConfigurationStepProps> = ({ config, on
           id="quantity"
           type="number"
           min="1"
-          value={config.quantity}
+          value={config.quantity || ''}
+          onFocus={(e) => e.target.select()}
           onChange={(e) => onConfigChange('quantity', parseInt(e.target.value, 10) || 1)}
           className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           aria-describedby="quantity-helper"

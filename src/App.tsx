@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { DoorType, Manufacturer, Region, Configuration, Prices } from './types';
 import { BASE_PRICES, BATTERY_PRICES, LOCK_PRICES, FILLING_PRICE_PER_SQ_METER, PAINTING_PRICE, MARKUP_PRICE, INSTALLATION_PRICES, DIMENSION_LIMITS } from './constants';
 
@@ -31,13 +31,23 @@ const App: React.FC = () => {
   const [prices, setPrices] = useState<Prices>({ itemPrice: 0, totalPrice: 0 });
   const [animationClass, setAnimationClass] = useState('animate__fadeIn');
   const [errors, setErrors] = useState<{ width?: string; height?: string }>({});
+  const mainRef = useRef<HTMLElement>(null);
+  const summaryRef = useRef<HTMLDivElement>(null);
+  const [isSummaryVisibleOnMobile, setIsSummaryVisibleOnMobile] = useState(false);
 
+  const scrollToTopIfNeeded = () => {
+    if (window.innerWidth < 1024 && mainRef.current) {
+      mainRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+  
   const handleNext = () => {
     if (currentStep < TOTAL_STEPS) {
       setAnimationClass('animate__fadeOut');
       setTimeout(() => {
         setCurrentStep(prev => prev + 1);
         setAnimationClass('animate__fadeIn');
+        scrollToTopIfNeeded();
       }, 300);
     }
   };
@@ -46,8 +56,12 @@ const App: React.FC = () => {
     if (currentStep > 1) {
       setAnimationClass('animate__fadeOut');
       setTimeout(() => {
+        if (currentStep === TOTAL_STEPS) {
+          setIsSummaryVisibleOnMobile(false);
+        }
         setCurrentStep(prev => prev - 1);
         setAnimationClass('animate__fadeIn');
+        scrollToTopIfNeeded();
       }, 300);
     }
   };
@@ -57,8 +71,17 @@ const App: React.FC = () => {
     setTimeout(() => {
       setCurrentStep(1);
       setConfiguration(initialConfiguration);
+      setIsSummaryVisibleOnMobile(false);
       setAnimationClass('animate__fadeIn');
+      scrollToTopIfNeeded();
     }, 300);
+  };
+  
+  const showSummaryOnMobile = () => {
+    setIsSummaryVisibleOnMobile(true);
+    setTimeout(() => {
+      summaryRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const handleConfigChange = <K extends keyof Configuration>(key: K, value: Configuration[K]) => {
@@ -148,11 +171,12 @@ const App: React.FC = () => {
     }
   };
   
-  const isNextDisabled = currentStep === TOTAL_STEPS || (currentStep === 2 && Object.keys(errors).length > 0);
+  const isNextDisabled = currentStep === 2 && Object.keys(errors).length > 0;
+  const isSummaryHiddenOnMobile = currentStep < TOTAL_STEPS || !isSummaryVisibleOnMobile;
 
   return (
     <div className="min-h-screen font-sans flex items-center justify-center p-4 bg-slate-100">
-      <main className="w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+      <main ref={mainRef} className="w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
         
         <div className="p-8 md:p-12 flex flex-col">
           <header className="mb-8">
@@ -162,29 +186,44 @@ const App: React.FC = () => {
           
           <StepIndicator currentStep={currentStep} />
           
-          <div className={`flex-grow mt-8 animate__animated ${animationClass}`}>
+          <div className={`flex-grow mt-8 min-h-[30rem] animate__animated ${animationClass}`}>
             {renderStep()}
           </div>
           
           <div className="mt-10 flex justify-between items-center">
-            <button
-              onClick={handlePrev}
-              disabled={currentStep === 1}
-              className="px-6 py-2 bg-slate-200 text-slate-700 font-semibold rounded-lg shadow-sm hover:bg-slate-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Назад
-            </button>
-            <button
-              onClick={handleNext}
-              disabled={isNextDisabled}
-              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Далее
-            </button>
+            {currentStep > 1 ? (
+              <button
+                onClick={handlePrev}
+                className="px-6 py-2 bg-slate-200 text-slate-700 font-semibold rounded-lg shadow-sm hover:bg-slate-300 transition-colors"
+              >
+                Назад
+              </button>
+            ) : (
+              <div /> // Placeholder to keep "Далее" button on the right
+            )}
+
+            {currentStep < TOTAL_STEPS && (
+              <button
+                onClick={handleNext}
+                disabled={isNextDisabled}
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Далее
+              </button>
+            )}
+
+            {currentStep === TOTAL_STEPS && !isSummaryVisibleOnMobile && (
+              <button
+                onClick={showSummaryOnMobile}
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors lg:hidden"
+              >
+                Ваш расчет
+              </button>
+            )}
           </div>
         </div>
         
-        <div className="bg-slate-100 p-8 md:p-12">
+        <div ref={summaryRef} className={`bg-slate-100 p-8 md:p-12 ${isSummaryHiddenOnMobile ? 'hidden' : ''} lg:block`}>
           <CalculationSummary 
             prices={prices} 
             config={configuration} 

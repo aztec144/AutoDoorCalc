@@ -19,8 +19,9 @@ export const DimensionsStep: React.FC<DimensionsStepProps> = ({ config, onConfig
           <input
             id="width"
             type="number"
-            value={config.width}
+            value={config.width || ''}
             onChange={(e) => onConfigChange('width', parseInt(e.target.value, 10) || 0)}
+            onFocus={(e) => e.target.select()}
             className={`w-full p-3 border rounded-lg focus:ring-2 transition ${errors.width ? 'border-red-500 focus:ring-red-300 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'}`}
             placeholder="Например, 2000"
             aria-invalid={!!errors.width}
@@ -33,8 +34,9 @@ export const DimensionsStep: React.FC<DimensionsStepProps> = ({ config, onConfig
           <input
             id="height"
             type="number"
-            value={config.height}
+            value={config.height || ''}
             onChange={(e) => onConfigChange('height', parseInt(e.target.value, 10) || 0)}
+            onFocus={(e) => e.target.select()}
             className={`w-full p-3 border rounded-lg focus:ring-2 transition ${errors.height ? 'border-red-500 focus:ring-red-300 focus:border-red-500' : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500'}`}
             placeholder="Например, 2200"
             aria-invalid={!!errors.height}
