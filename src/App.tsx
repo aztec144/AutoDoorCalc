@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { DoorType, Manufacturer, Region, Configuration, Prices, LeadForm } from './types';
+import { DoorType, Manufacturer, Region, Configuration, Prices } from './types';
 import { BASE_PRICES, BATTERY_PRICES, LOCK_PRICES, FILLING_PRICE_PER_SQ_METER, PAINTING_PRICE, MARKUP_PRICE, INSTALLATION_PRICES, DIMENSION_LIMITS } from './constants';
 
 import { StepIndicator } from './components/StepIndicator';

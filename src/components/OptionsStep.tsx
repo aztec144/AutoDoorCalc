@@ -1,5 +1,5 @@
 import React from 'react';
-import { Configuration, DoorType } from '../types';
+import { Configuration } from '../types';
 
 interface OptionsStepProps {
   config: Configuration;

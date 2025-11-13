@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Configuration, DoorType, Manufacturer } from '../types';
+import { Configuration, Manufacturer } from '../types';
 import { DOOR_TYPES_CONFIG, MANUFACTURER_CONFIG } from '../constants';
 import { DoorIcons } from './icons/DoorIcons';
 
