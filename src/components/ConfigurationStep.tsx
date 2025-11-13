@@ -12,13 +12,13 @@ interface ConfigurationStepProps {
 
 export const ConfigurationStep: React.FC<ConfigurationStepProps> = ({ config, onConfigChange }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-slate-700 mb-4">1. Тип двери</h3>
-        <div className="space-y-6">
+        <h3 className="text-lg font-semibold text-slate-700 mb-3">1. Тип двери</h3>
+        <div className="space-y-5">
           {DOOR_TYPES_CONFIG.map(({ group, types }) => (
             <div key={group}>
-              <h4 className="text-md font-medium text-slate-600 mb-3">{group}</h4>
+              <h4 className="text-md font-medium text-slate-600 mb-2">{group}</h4>
               <div className="grid grid-cols-2 gap-4">
                 {types.map(({ id, label }) => (
                   <button
@@ -41,7 +41,7 @@ export const ConfigurationStep: React.FC<ConfigurationStepProps> = ({ config, on
       </div>
 
       <div>
-        <h3 className="text-lg font-semibold text-slate-700 mb-4">2. Производитель привода</h3>
+        <h3 className="text-lg font-semibold text-slate-700 mb-3">2. Производитель привода</h3>
         <div className="flex flex-col sm:flex-row gap-4">
           {MANUFACTURER_CONFIG.map(({ id, label }) => (
              <button

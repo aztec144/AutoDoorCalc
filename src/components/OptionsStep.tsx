@@ -14,7 +14,7 @@ const CheckboxOption: React.FC<{
   disabled?: boolean;
   onChange: (id: keyof Configuration, checked: boolean) => void;
 }> = ({ id, label, description, checked, disabled, onChange }) => (
-  <label htmlFor={id} className={`flex items-start p-4 border rounded-lg cursor-pointer transition-all ${checked ? 'bg-blue-50 border-blue-400' : 'bg-white border-slate-200'} ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-100' : 'hover:border-blue-300'}`}>
+  <label htmlFor={id} className={`flex items-start p-3 border rounded-lg cursor-pointer transition-all ${checked ? 'bg-blue-50 border-blue-400' : 'bg-white border-slate-200'} ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-100' : 'hover:border-blue-300'}`}>
     <input
       id={id}
       type="checkbox"
@@ -33,11 +33,11 @@ const CheckboxOption: React.FC<{
 
 export const OptionsStep: React.FC<OptionsStepProps> = ({ config, onConfigChange }) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <h3 className="text-xl font-semibold text-slate-700">Дополнительные опции</h3>
       <p className="text-slate-500">Все опции включены по умолчанию для вашего удобства.</p>
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         <CheckboxOption
           id="hasBattery"
           label="АКБ (Аккумулятор)"

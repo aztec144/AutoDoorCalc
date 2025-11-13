@@ -178,19 +178,19 @@ const App: React.FC = () => {
     <div className="min-h-screen font-sans flex items-center justify-center p-4 bg-slate-100">
       <main ref={mainRef} className="w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
         
-        <div className="p-8 md:p-12 flex flex-col">
-          <header className="mb-8">
+        <div className="p-6 md:p-8 flex flex-col">
+          <header className="mb-6">
             <h1 className="text-3xl md:text-4xl font-bold text-slate-800">Калькулятор стоимости</h1>
             <p className="text-slate-500 mt-2">Рассчитайте предварительную стоимость автоматических дверей</p>
           </header>
           
           <StepIndicator currentStep={currentStep} />
           
-          <div className={`flex-grow mt-8 min-h-[30rem] animate__animated ${animationClass}`}>
+          <div className={`flex-grow mt-6 min-h-[24rem] animate__animated ${animationClass}`}>
             {renderStep()}
           </div>
           
-          <div className="mt-10 flex justify-between items-center">
+          <div className="mt-8 flex justify-between items-center">
             {currentStep > 1 ? (
               <button
                 onClick={handlePrev}
@@ -223,7 +223,7 @@ const App: React.FC = () => {
           </div>
         </div>
         
-        <div ref={summaryRef} className={`bg-slate-100 p-8 md:p-12 ${isSummaryHiddenOnMobile ? 'hidden' : ''} lg:block`}>
+        <div ref={summaryRef} className={`bg-slate-100 p-6 md:p-8 ${isSummaryHiddenOnMobile ? 'hidden' : ''} lg:block`}>
           <CalculationSummary 
             prices={prices} 
             config={configuration} 

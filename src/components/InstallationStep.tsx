@@ -9,7 +9,7 @@ interface InstallationStepProps {
 
 export const InstallationStep: React.FC<InstallationStepProps> = ({ config, onConfigChange }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
         <label htmlFor="region" className="block text-lg font-semibold text-slate-700 mb-2">Регион монтажа</label>
         <div className="relative">
@@ -30,7 +30,7 @@ export const InstallationStep: React.FC<InstallationStepProps> = ({ config, onCo
       </div>
       
       <div>
-        <label htmlFor="hasInstallation" className="flex items-start p-4 border rounded-lg cursor-pointer transition-all bg-white hover:bg-slate-50">
+        <label htmlFor="hasInstallation" className="flex items-start p-3 border rounded-lg cursor-pointer transition-all bg-white hover:bg-slate-50">
           <div className="flex items-center h-5">
             <input
               id="hasInstallation"

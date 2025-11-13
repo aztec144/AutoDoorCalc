@@ -12,7 +12,7 @@ interface DimensionsStepProps {
 
 export const DimensionsStep: React.FC<DimensionsStepProps> = ({ config, onConfigChange, errors }) => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="width" className="block text-lg font-semibold text-slate-700 mb-2">Ширина (B), мм</label>
@@ -45,7 +45,7 @@ export const DimensionsStep: React.FC<DimensionsStepProps> = ({ config, onConfig
           {errors.height && <p id="height-error" className="mt-2 text-sm text-red-600">{errors.height}</p>}
         </div>
       </div>
-      <div className="mt-6 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded-r-lg">
+      <div className="mt-4 p-4 bg-blue-50 border-l-4 border-blue-400 text-blue-800 rounded-r-lg">
         <p className="text-sm">Площадь проема: <span className="font-bold">{((config.width / 1000) * (config.height / 1000)).toFixed(2)} м²</span></p>
       </div>
     </div>

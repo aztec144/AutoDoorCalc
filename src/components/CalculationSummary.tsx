@@ -147,7 +147,7 @@ export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, 
         <p className="text-xs text-slate-400 mt-2 text-center">Расчет является предварительным и требует уточнения у менеджера.</p>
       </div>
 
-      <div className="mt-auto pt-8">
+      <div className="mt-auto pt-6">
         <h3 className="text-xl font-semibold text-slate-800">Оставить заявку</h3>
         <p className="text-sm text-slate-500 mb-4">Наш менеджер свяжется с вами для уточнения деталей.</p>
         
