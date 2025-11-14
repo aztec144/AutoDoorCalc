@@ -1,6 +1,8 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import type { IncomingMessage, ServerResponse } from 'http';
+// Fix: Import 'process' to provide the correct type definitions for process.cwd()
+import process from 'process';
 
 // Вспомогательная функция для чтения тела запроса в Node.js
 async function getRequestBody(req: IncomingMessage): Promise<any> {

@@ -31,6 +31,7 @@ const App: React.FC = () => {
   const [prices, setPrices] = useState<Prices>({ itemPrice: 0, totalPrice: 0 });
   const [animationClass, setAnimationClass] = useState('animate__fadeIn');
   const [errors, setErrors] = useState<{ width?: string; height?: string }>({});
+  const [isLargePriceApplied, setIsLargePriceApplied] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const [isSummaryVisibleOnMobile, setIsSummaryVisibleOnMobile] = useState(false);
@@ -95,8 +96,22 @@ const App: React.FC = () => {
       region, hasInstallation
     } = configuration;
 
+    let isLarge = false;
+
     // P_База
-    const basePrice = BASE_PRICES[doorType][manufacturer];
+    let basePrice: number;
+    const priceData = BASE_PRICES[doorType][manufacturer];
+    
+    if (doorType === DoorType.SlidingDoubleLeaf && typeof priceData === 'object' && 'base' in priceData) {
+        if (width > 1500) {
+            basePrice = priceData.large;
+            isLarge = true;
+        } else {
+            basePrice = priceData.base;
+        }
+    } else {
+        basePrice = priceData as number;
+    }
 
     // P_АКБ
     const batteryPrice = hasBattery ? BATTERY_PRICES[manufacturer] : 0;
@@ -128,6 +143,7 @@ const App: React.FC = () => {
     const totalPrice = (itemPrice * quantity) + (installationPrice * quantity);
 
     setPrices({ itemPrice, totalPrice });
+    setIsLargePriceApplied(isLarge);
   }, [configuration]);
 
   const validateDimensions = useCallback((config: Configuration) => {
@@ -230,6 +246,7 @@ const App: React.FC = () => {
             onReset={handleReset} 
             currentStep={currentStep}
             totalSteps={TOTAL_STEPS}
+            isLargePriceApplied={isLargePriceApplied}
           />
         </div>
       </main>

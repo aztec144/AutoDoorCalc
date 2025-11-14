@@ -7,6 +7,7 @@ interface CalculationSummaryProps {
   onReset: () => void;
   currentStep: number;
   totalSteps: number;
+  isLargePriceApplied: boolean;
 }
 
 const formatCurrency = (value: number) => {
@@ -22,7 +23,7 @@ const DetailRow: React.FC<{ label: React.ReactNode; value: string | number | Rea
 
 const initialLeadState: LeadForm = { name: '', phone: '', email: '', comment: '' };
 
-export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, config, onReset, currentStep, totalSteps }) => {
+export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, config, onReset, currentStep, totalSteps, isLargePriceApplied }) => {
   const [lead, setLead] = useState<LeadForm>(initialLeadState);
   const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [submissionError, setSubmissionError] = useState<string | null>(null);
@@ -128,10 +129,13 @@ export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, 
           label={
             <>
               Цена за 1 изделие
-              {selectedOptions.length > 0 && (
-                <div className="text-xs text-slate-400 font-normal mt-1">
-                  ({selectedOptions.join(', ')})
-                </div>
+              {(isLargePriceApplied || selectedOptions.length > 0) && (
+                 <div className="text-xs text-slate-400 font-normal mt-1">
+                   ({[
+                      (isLargePriceApplied ? 'проем > 1500мм' : null),
+                      (selectedOptions.length > 0 ? `вкл: ${selectedOptions.join(', ')}` : null)
+                    ].filter(Boolean).join(' / ')})
+                 </div>
               )}
             </>
           }
