@@ -99,18 +99,15 @@ const App: React.FC = () => {
     let isLarge = false;
 
     // P_База
-    let basePrice: number;
     const priceData = BASE_PRICES[doorType][manufacturer];
+    let basePrice: number;
     
-    if (doorType === DoorType.SlidingDoubleLeaf && typeof priceData === 'object' && 'base' in priceData) {
-        if (width > 1500) {
-            basePrice = priceData.large;
-            isLarge = true;
-        } else {
-            basePrice = priceData.base;
-        }
+    // Проверяем, является ли дверь двухстворчатой, есть ли для нее цена large и превышает ли ширина порог
+    if (doorType === DoorType.SlidingDoubleLeaf && priceData.large && width > 1500) {
+      basePrice = priceData.large;
+      isLarge = true;
     } else {
-        basePrice = priceData as number;
+      basePrice = priceData.base;
     }
 
     // P_АКБ

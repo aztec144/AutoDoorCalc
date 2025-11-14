@@ -4,17 +4,27 @@ import { DoorType, Manufacturer, Region } from './types';
 // УПРАВЛЕНИЕ ЦЕНАМИ (ИМИТАЦИЯ АДМИН-ПАНЕЛИ)
 // ===================================
 
-type PriceStructure = number | { base: number; large: number };
+// Используем единую структуру, где large - опциональная цена для больших проемов
+type PriceStructure = { base: number; large?: number };
 
 // 1. Базовые цены (Тип двери x Производитель)
 export const BASE_PRICES: Record<DoorType, Record<Manufacturer, PriceStructure>> = {
-  [DoorType.SlidingSingleLeaf]: { [Manufacturer.GEZE]: 222162, [Manufacturer.DoorHan]: 157300 },
+  [DoorType.SlidingSingleLeaf]: { 
+    [Manufacturer.GEZE]: { base: 222162 }, 
+    [Manufacturer.DoorHan]: { base: 157300 } 
+  },
   [DoorType.SlidingDoubleLeaf]: { 
     [Manufacturer.GEZE]: { base: 231366, large: 248183 },
     [Manufacturer.DoorHan]: { base: 148535, large: 184820 }
   },
-  [DoorType.TelescopicOneWay]: { [Manufacturer.GEZE]: 300000, [Manufacturer.DoorHan]: 200000 },
-  [DoorType.TelescopicTwoWay]: { [Manufacturer.GEZE]: 350000, [Manufacturer.DoorHan]: 250000 },
+  [DoorType.TelescopicOneWay]: { 
+    [Manufacturer.GEZE]: { base: 300000 }, 
+    [Manufacturer.DoorHan]: { base: 200000 } 
+  },
+  [DoorType.TelescopicTwoWay]: { 
+    [Manufacturer.GEZE]: { base: 350000 }, 
+    [Manufacturer.DoorHan]: { base: 250000 } 
+  },
 };
 
 // 2. Цены на опции
