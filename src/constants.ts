@@ -19,26 +19,26 @@ export const BASE_PRICES: Record<DoorType, Record<Manufacturer, PriceStructure>>
   },
   [DoorType.TelescopicOneWay]: { 
     [Manufacturer.GEZE]: { base: 300000 }, 
-    [Manufacturer.DoorHan]: { base: 200000 } 
+    [Manufacturer.DoorHan]: { base: 228987 } 
   },
   [DoorType.TelescopicTwoWay]: { 
     [Manufacturer.GEZE]: { base: 350000 }, 
-    [Manufacturer.DoorHan]: { base: 250000 } 
+    [Manufacturer.DoorHan]: { base: 274855 } 
   },
 };
 
 // 2. Цены на опции
 export const BATTERY_PRICES: Record<Manufacturer, number> = {
   [Manufacturer.GEZE]: 6762,
-  [Manufacturer.DoorHan]: 6300,
+  [Manufacturer.DoorHan]: 6450,
 };
 
 // Замки доступны для всех типов дверей
 export const LOCK_PRICES: Record<DoorType, Record<Manufacturer, number>> = {
-  [DoorType.SlidingSingleLeaf]: { [Manufacturer.GEZE]: 10192, [Manufacturer.DoorHan]: 5180 },
-  [DoorType.SlidingDoubleLeaf]: { [Manufacturer.GEZE]: 10192, [Manufacturer.DoorHan]: 5180 },
-  [DoorType.TelescopicOneWay]: { [Manufacturer.GEZE]: 14700, [Manufacturer.DoorHan]: 9600 },
-  [DoorType.TelescopicTwoWay]: { [Manufacturer.GEZE]: 14700, [Manufacturer.DoorHan]: 9600 },
+  [DoorType.SlidingSingleLeaf]: { [Manufacturer.GEZE]: 10192, [Manufacturer.DoorHan]: 5300 },
+  [DoorType.SlidingDoubleLeaf]: { [Manufacturer.GEZE]: 10192, [Manufacturer.DoorHan]: 5300 },
+  [DoorType.TelescopicOneWay]: { [Manufacturer.GEZE]: 14700, [Manufacturer.DoorHan]: 3100 },
+  [DoorType.TelescopicTwoWay]: { [Manufacturer.GEZE]: 14700, [Manufacturer.DoorHan]: 3100 },
 };
 
 // 3. Фиксированные цены
