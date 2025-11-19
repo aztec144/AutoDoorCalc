@@ -157,7 +157,7 @@ ${config.region !== Region.Kazan ? '- ⚠️ Транспортные расхо
             </div>
             <p className="font-bold text-lg">Заявка принята!</p>
             <p className="text-sm opacity-80 mt-1">Менеджер свяжется с вами в ближайшее время.</p>
-            <button onClick={handleNewCalculation} className="mt-4 w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors">
+            <button onClick={handleNewCalculation} className="mt-4 block w-[calc(100%-10px)] mx-auto py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors">
               Рассчитать еще
             </button>
           </div>
@@ -167,17 +167,17 @@ ${config.region !== Region.Kazan ? '- ⚠️ Транспортные расхо
                 <input 
                     type="text" name="name" placeholder="Ваше имя" required 
                     value={lead.name} onChange={handleInputChange} 
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                    className="block w-[calc(100%-10px)] mx-auto px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                 />
                 <input 
                     type="tel" name="phone" placeholder="Телефон" required 
                     value={lead.phone} onChange={handleInputChange} 
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                    className="block w-[calc(100%-10px)] mx-auto px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                 />
                 <input 
                     type="email" name="email" placeholder="Email" required 
                     value={lead.email} onChange={handleInputChange} 
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                    className="block w-[calc(100%-10px)] mx-auto px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
                 />
                 <textarea 
                     name="comment" 
@@ -185,7 +185,7 @@ ${config.region !== Region.Kazan ? '- ⚠️ Транспортные расхо
                     value={lead.comment || ''} 
                     onChange={handleInputChange}
                     rows={2}
-                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all resize-none"
+                    className="block w-[calc(100%-10px)] mx-auto px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all resize-none"
                 />
             </div>
             
@@ -198,7 +198,7 @@ ${config.region !== Region.Kazan ? '- ⚠️ Транспортные расхо
             <button 
               type="submit" 
               disabled={submissionStatus === 'loading'}
-              className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-900/50 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait mt-2"
+              className="block w-[calc(100%-10px)] mx-auto py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-900/50 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait mt-2"
             >
               {submissionStatus === 'loading' ? 'Отправка...' : 'Отправить заявку'}
             </button>
