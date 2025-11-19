@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Prices, Configuration, LeadForm } from '../types';
+import { Prices, Configuration, LeadForm, Region } from '../types';
 
 interface CalculationSummaryProps {
   prices: Prices;
@@ -148,7 +148,14 @@ export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, 
           <span className="text-lg font-bold text-slate-800">Общий итог:</span>
           <span className="text-2xl font-extrabold text-blue-600">{formatCurrency(prices.totalPrice)}</span>
         </div>
-        <p className="text-xs text-slate-400 mt-2 text-center">Расчет является предварительным и требует уточнения у менеджера.</p>
+        <div className="flex flex-col space-y-1 mt-2">
+            <p className="text-xs text-slate-400 text-center">Расчет является предварительным и требует уточнения у менеджера.</p>
+            {config.region !== Region.Kazan && (
+                <p className="text-xs text-amber-600 font-medium text-center animate__animated animate__fadeIn">
+                  Доставка до объекта не включена в стоимость
+                </p>
+            )}
+        </div>
       </div>
 
       <div className="mt-auto pt-6">

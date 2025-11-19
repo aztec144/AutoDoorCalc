@@ -27,6 +27,16 @@ export const InstallationStep: React.FC<InstallationStepProps> = ({ config, onCo
             <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
           </div>
         </div>
+        {config.region !== Region.Kazan && (
+          <div className="mt-3 p-3 bg-amber-50 border-l-4 border-amber-400 text-amber-800 text-sm rounded-r-lg animate__animated animate__fadeIn">
+            <div className="flex items-start">
+              <svg className="w-5 h-5 text-amber-500 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Доставка до объекта не включена в стоимость</span>
+            </div>
+          </div>
+        )}
       </div>
       
       <div>
