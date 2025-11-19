@@ -4,47 +4,55 @@ interface StepIndicatorProps {
   currentStep: number;
 }
 
-const CheckmarkIcon: React.FC = () => (
-    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path>
-    </svg>
-);
-
 export const StepIndicator: React.FC<StepIndicatorProps> = ({ currentStep }) => {
-  const steps = ['Конфигурация', 'Размеры', 'Опции', 'Монтаж'];
+  const totalSteps = 4;
+  const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
 
   return (
-    <div className="flex items-center w-full">
-      {steps.map((title, index) => {
-        const stepNumber = index + 1;
-        const isAchieved = currentStep >= stepNumber;
-        const isActive = currentStep === stepNumber;
+    <div className="w-full px-1">
+      <div className="flex items-center justify-between w-full">
+        {steps.map((step, index) => {
+          // Logic for the connecting line (appears before steps 2, 3, 4)
+          const isLineVisible = index > 0;
+          // The line connects the previous step to this one.
+          // It should be filled if the current step is this step or greater.
+          const isLineFilled = currentStep >= step;
 
-        return (
-          <React.Fragment key={title}>
-            <div className="flex flex-col items-center text-center w-1/4">
+          const isActive = currentStep === step;
+          const isCompleted = currentStep > step;
+
+          return (
+            <React.Fragment key={step}>
+              {isLineVisible && (
+                <div className="flex-1 mx-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full bg-indigo-600 rounded-full transition-all duration-500 ease-out origin-left ${
+                      isLineFilled ? 'w-full' : 'w-0'
+                    }`}
+                  />
+                </div>
+              )}
+
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 relative
-                  ${isAchieved ? 'bg-green-500' : 'bg-white border-2 border-slate-300'}
-                  ${isActive ? 'ring-4 ring-blue-200' : ''}
+                className={`
+                  relative flex items-center justify-center flex-shrink-0
+                  w-10 h-10 md:w-12 md:h-12 rounded-full font-bold text-base md:text-lg
+                  transition-all duration-500 border-2 select-none z-10
+                  ${
+                    isActive
+                      ? 'bg-indigo-600 border-indigo-600 text-white scale-110 shadow-lg shadow-indigo-200 ring-4 ring-indigo-50'
+                      : isCompleted
+                      ? 'bg-indigo-600 border-indigo-600 text-white'
+                      : 'bg-white border-slate-200 text-slate-400'
+                  }
                 `}
               >
-                {isAchieved && <CheckmarkIcon />}
+                {step}
               </div>
-              <span className={`mt-2 text-xs md:text-sm font-medium
-                ${isActive ? 'text-blue-600' : 'text-slate-500'}
-              `}>
-                {title}
-              </span>
-            </div>
-            {index < steps.length - 1 && (
-              <div className={`flex-1 h-0.5
-                ${isAchieved ? 'bg-green-500' : 'bg-slate-300'}
-              `}></div>
-            )}
-          </React.Fragment>
-        );
-      })}
+            </React.Fragment>
+          );
+        })}
+      </div>
     </div>
   );
 };

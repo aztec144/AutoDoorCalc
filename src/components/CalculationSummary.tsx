@@ -7,23 +7,22 @@ interface CalculationSummaryProps {
   onReset: () => void;
   currentStep: number;
   totalSteps: number;
-  isLargePriceApplied: boolean;
 }
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', minimumFractionDigits: 0 }).format(value);
 };
 
-const DetailRow: React.FC<{ label: React.ReactNode; value: string | number | React.ReactNode; isBold?: boolean }> = ({ label, value, isBold }) => (
-  <div className={`flex justify-between items-start py-2 ${isBold ? 'font-semibold' : ''}`}>
-    <div className="text-sm text-slate-600">{label}</div>
-    <span className={`text-sm text-right ${isBold ? 'text-slate-800' : 'text-slate-500'}`}>{value}</span>
+const DetailRow: React.FC<{ label: React.ReactNode; value: string | number | React.ReactNode; isTotal?: boolean }> = ({ label, value, isTotal }) => (
+  <div className={`flex justify-between items-center py-3 ${isTotal ? 'border-t border-white/10 mt-2 pt-4' : 'border-b border-white/5 last:border-0'}`}>
+    <div className={`text-sm ${isTotal ? 'text-white font-bold text-lg' : 'text-slate-400'}`}>{label}</div>
+    <span className={`text-right ${isTotal ? 'text-2xl font-bold text-white' : 'text-slate-200 font-medium'}`}>{value}</span>
   </div>
 );
 
 const initialLeadState: LeadForm = { name: '', phone: '', email: '', comment: '' };
 
-export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, config, onReset, currentStep, totalSteps, isLargePriceApplied }) => {
+export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, config, onReset, currentStep, totalSteps }) => {
   const [lead, setLead] = useState<LeadForm>(initialLeadState);
   const [submissionStatus, setSubmissionStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [submissionError, setSubmissionError] = useState<string | null>(null);
@@ -68,6 +67,7 @@ export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, 
 - Покраска: ${config.hasPainting ? 'Да' : 'Нет'}
 - Регион: ${escapeHTML(config.region)}
 - Монтаж: ${config.hasInstallation ? 'Да' : 'Нет'}
+${config.region !== Region.Kazan ? '- ⚠️ Транспортные расходы не учтены' : ''}
 
 --------------------------------
 <b>ИТОГИ:</b>
@@ -85,147 +85,127 @@ export const CalculationSummary: React.FC<CalculationSummaryProps> = ({ prices, 
     const message = generateTelegramMessage();
 
     try {
-      // Send data to the secure backend endpoint instead of Telegram directly
       const response = await fetch('/api/telegram', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message }),
       });
 
       if (response.ok) {
         setSubmissionStatus('success');
       } else {
-        // Handle errors from our own backend
         const errorData = await response.json();
-        const errorMessage = errorData.message || `Ошибка сервера: ${response.statusText}`;
-        console.error('Backend error:', errorMessage);
-        setSubmissionError(errorMessage);
+        setSubmissionError(errorData.message || 'Ошибка сервера');
         setSubmissionStatus('error');
       }
     } catch (error) {
-      // Handle network errors
-      console.error('Network error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Проверьте сетевое соединение.';
-      setSubmissionError(`Ошибка сети: ${errorMessage}`);
+      setSubmissionError(error instanceof Error ? error.message : 'Ошибка сети');
       setSubmissionStatus('error');
     }
   };
 
-  const selectedOptions: string[] = [];
-  if (config.hasBattery) selectedOptions.push('АКБ');
-  if (config.hasLock) selectedOptions.push('Замок');
-  if (config.hasFilling) selectedOptions.push('СПО');
-  if (config.hasPainting) selectedOptions.push('RAL');
-
   return (
-    <div className="h-full flex flex-col sticky top-0">
-      <h2 className="text-2xl font-bold text-slate-800">Ваш расчет</h2>
-      <p className="text-md font-semibold text-slate-700 mt-2">{config.doorType} / {config.manufacturer} / Проем: {config.width} х {config.height}</p>
+    <div className="h-full flex flex-col custom-scrollbar overflow-y-auto">
+      <h2 className="text-2xl font-bold text-white mb-1">Смета проекта</h2>
+      <p className="text-indigo-300 text-sm mb-6 opacity-80">Предварительный расчет стоимости</p>
       
-      <div className="mt-4 p-4 bg-white rounded-xl shadow-sm border border-slate-200">
-        <DetailRow
-          label={
-            <>
-              Цена за 1 изделие
-              {(isLargePriceApplied || selectedOptions.length > 0) && (
-                 <div className="text-xs text-slate-400 font-normal mt-1">
-                   ({[
-                      (isLargePriceApplied ? 'проем > 1500мм' : null),
-                      (selectedOptions.length > 0 ? `вкл: ${selectedOptions.join(', ')}` : null)
-                    ].filter(Boolean).join(' / ')})
-                 </div>
-              )}
-            </>
-          }
-          value={formatCurrency(prices.itemPrice)}
-        />
-        <DetailRow label={`Количество`} value={`${config.quantity} шт.`} />
-        {config.hasInstallation && <DetailRow label={`Монтаж (${config.region})`} value={`Включен`} />}
-        <hr className="my-2 border-slate-200" />
-        <div className="flex justify-between items-center mt-4">
-          <span className="text-lg font-bold text-slate-800">Общий итог:</span>
-          <span className="text-2xl font-extrabold text-blue-600">{formatCurrency(prices.totalPrice)}</span>
+      <div className="bg-slate-800/50 rounded-2xl p-6 border border-white/5 backdrop-blur-sm mb-4">
+        <div className="flex items-center justify-between mb-4">
+           <div>
+              <div className="text-white font-semibold">{config.doorType}</div>
+              <div className="text-slate-400 text-xs mt-1">{config.manufacturer} • {config.width}x{config.height}мм</div>
+           </div>
+           <div className="bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded text-xs font-bold">
+              {config.quantity} шт
+           </div>
         </div>
-        <div className="flex flex-col space-y-1 mt-2">
-            <p className="text-xs text-slate-400 text-center">Расчет является предварительным и требует уточнения у менеджера.</p>
-            {config.region !== Region.Kazan && (
-                <p className="text-xs text-amber-600 font-medium text-center animate__animated animate__fadeIn">
-                  Доставка до объекта не включена в стоимость
-                </p>
-            )}
+        
+        <div className="space-y-1">
+            <DetailRow label="Цена за ед." value={formatCurrency(prices.itemPrice)} />
+            {config.hasInstallation && <DetailRow label={`Монтаж (${config.region})`} value="Включен" />}
         </div>
+
+        {/* Предупреждение о транспортных расходах */}
+        {config.region !== Region.Kazan && (
+           <div className="mt-3 pt-3 border-t border-white/5">
+              <p className="text-xs text-amber-400/90 flex items-center">
+                  <span className="mr-2">⚠️</span>
+                  Транспортные расходы не учтены
+              </p>
+           </div>
+        )}
+
+        <DetailRow label="Итого" value={formatCurrency(prices.totalPrice)} isTotal />
       </div>
 
-      <div className="mt-auto pt-6">
-        <h3 className="text-xl font-semibold text-slate-800">Оставить заявку</h3>
-        <p className="text-sm text-slate-500 mb-4">Наш менеджер свяжется с вами для уточнения деталей.</p>
+      {/* Дисклеймер о предварительном расчете */}
+      <p className="text-slate-500 text-xs text-center mb-8 leading-relaxed px-4">
+         Расчет является предварительным и требует уточнения у менеджера.
+      </p>
+
+      <div className="mt-auto">
+        <h3 className="text-lg font-semibold text-white mb-4">Оформление заявки</h3>
         
-        {isFormDisabled && (
-          <div className="p-3 text-center bg-yellow-50 text-yellow-800 rounded-lg mb-4 border border-yellow-200 animate__animated animate__fadeIn">
-            <p className="text-sm font-medium">Для отправки заявки, пожалуйста, пройдите все шаги расчета.</p>
+        {isFormDisabled ? (
+          <div className="p-4 bg-indigo-900/30 border border-indigo-500/30 text-indigo-200 rounded-xl text-sm text-center">
+            Заполните все параметры двери, чтобы отправить заявку менеджеру.
           </div>
-        )}
-        
-        {submissionStatus === 'success' && (
-          <div className="p-4 text-center bg-green-100 text-green-800 rounded-lg">
-            <p className="font-semibold">Спасибо! Ваша заявка отправлена.</p>
-            <p className="text-sm">Мы скоро свяжемся с вами.</p>
-            <button 
-              onClick={handleNewCalculation}
-              className="mt-4 px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors"
-            >
-              Новый расчет
+        ) : submissionStatus === 'success' ? (
+          <div className="p-6 bg-green-500/10 border border-green-500/30 text-green-100 rounded-2xl text-center animate__animated animate__fadeIn">
+            <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+            <p className="font-bold text-lg">Заявка принята!</p>
+            <p className="text-sm opacity-80 mt-1">Менеджер свяжется с вами в ближайшее время.</p>
+            <button onClick={handleNewCalculation} className="mt-4 w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-sm font-medium transition-colors">
+              Рассчитать еще
             </button>
           </div>
-        )}
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-3 animate__animated animate__fadeIn">
+            <div className="space-y-3">
+                <input 
+                    type="text" name="name" placeholder="Ваше имя" required 
+                    value={lead.name} onChange={handleInputChange} 
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                />
+                <input 
+                    type="tel" name="phone" placeholder="Телефон" required 
+                    value={lead.phone} onChange={handleInputChange} 
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                />
+                <input 
+                    type="email" name="email" placeholder="Email" required 
+                    value={lead.email} onChange={handleInputChange} 
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all"
+                />
+                <textarea 
+                    name="comment" 
+                    placeholder="Комментарий" 
+                    value={lead.comment || ''} 
+                    onChange={handleInputChange}
+                    rows={2}
+                    className="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all resize-none"
+                />
+            </div>
+            
+            {submissionStatus === 'error' && (
+                <div className="text-xs text-red-300 bg-red-900/30 p-2 rounded border border-red-900/50">
+                    {submissionError || "Ошибка отправки"}
+                </div>
+            )}
 
-        {submissionStatus === 'error' && (
-          <div className="p-4 text-center bg-red-100 text-red-800 rounded-lg">
-            <p className="font-semibold">Ошибка отправки.</p>
-            <p className="text-sm mb-3">Пожалуйста, попробуйте еще раз или свяжитесь с нами напрямую.</p>
-            {submissionError && <p className="text-xs bg-red-200 p-2 rounded mt-2 font-mono">{submissionError}</p>}
-            <button 
-              onClick={() => { setSubmissionStatus('idle'); setSubmissionError(null); }}
-              className="px-4 py-1 mt-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors"
-            >
-              Попробовать снова
-            </button>
-          </div>
-        )}
-
-        {(submissionStatus === 'idle' || submissionStatus === 'loading') && (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input type="text" name="name" placeholder="Ваше имя" required value={lead.name} onChange={handleInputChange} disabled={isFormDisabled} className="w-full p-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-slate-400 text-slate-800 disabled:bg-slate-100 disabled:cursor-not-allowed"/>
-            <input type="tel" name="phone" placeholder="Телефон" required value={lead.phone} onChange={handleInputChange} disabled={isFormDisabled} className="w-full p-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-slate-400 text-slate-800 disabled:bg-slate-100 disabled:cursor-not-allowed"/>
-            <input type="email" name="email" placeholder="Email" required value={lead.email} onChange={handleInputChange} disabled={isFormDisabled} className="w-full p-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-slate-400 text-slate-800 disabled:bg-slate-100 disabled:cursor-not-allowed"/>
-            <textarea
-              name="comment"
-              placeholder="Комментарий к заказу"
-              value={lead.comment}
-              onChange={handleInputChange}
-              disabled={isFormDisabled}
-              className="w-full p-3 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition placeholder-slate-400 text-slate-800 disabled:bg-slate-100 disabled:cursor-not-allowed"
-              rows={3}
-            />
             <button 
               type="submit" 
-              disabled={submissionStatus === 'loading' || isFormDisabled}
-              className="w-full py-3 px-6 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 transition-all text-lg flex items-center justify-center disabled:bg-blue-400 disabled:cursor-not-allowed"
+              disabled={submissionStatus === 'loading'}
+              className="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-indigo-900/50 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait mt-2"
             >
-              {submissionStatus === 'loading' ? (
-                <>
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Отправка...
-                </>
-              ) : (
-                'Отправить заявку'
-              )}
+              {submissionStatus === 'loading' ? 'Отправка...' : 'Отправить заявку'}
             </button>
+            
+            <p className="text-[10px] text-slate-500 text-center mt-2">
+                Нажимая кнопку, вы соглашаетесь с политикой обработки персональных данных.
+            </p>
           </form>
         )}
       </div>

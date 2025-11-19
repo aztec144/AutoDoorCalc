@@ -6,7 +6,7 @@ interface OptionsStepProps {
   onConfigChange: <K extends keyof Configuration>(key: K, value: Configuration[K]) => void;
 }
 
-const CheckboxOption: React.FC<{
+const ToggleOption: React.FC<{
   id: keyof Configuration;
   label: string;
   description: string;
@@ -14,55 +14,59 @@ const CheckboxOption: React.FC<{
   disabled?: boolean;
   onChange: (id: keyof Configuration, checked: boolean) => void;
 }> = ({ id, label, description, checked, disabled, onChange }) => (
-  <label htmlFor={id} className={`flex items-start p-3 border rounded-lg cursor-pointer transition-all ${checked ? 'bg-blue-50 border-blue-400' : 'bg-white border-slate-200'} ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-100' : 'hover:border-blue-300'}`}>
-    <input
-      id={id}
-      type="checkbox"
-      checked={checked}
-      disabled={disabled}
-      onChange={(e) => onChange(id, e.target.checked)}
-      className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-1"
-    />
-    <div className="ml-4">
-      <span className="font-medium text-slate-800">{label}</span>
-      <p className="text-sm text-slate-500">{description}</p>
-      {disabled && <p className="text-xs text-red-500 mt-1">Недоступно для выбранного типа двери.</p>}
+  <div 
+    onClick={() => !disabled && onChange(id, !checked)}
+    className={`flex items-center justify-between p-5 rounded-2xl border transition-all duration-200 cursor-pointer group
+    ${checked ? 'border-indigo-600 bg-indigo-50/30' : 'border-slate-200 bg-white hover:border-indigo-200'}
+    ${disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : ''}
+  `}>
+    <div className="flex-1 pr-4">
+        <h4 className={`font-semibold text-base ${checked ? 'text-indigo-900' : 'text-slate-800'}`}>{label}</h4>
+        <p className="text-sm text-slate-500 mt-1 leading-relaxed">{description}</p>
+         {disabled && <p className="text-xs text-red-500 mt-1">Недоступно для выбранного типа.</p>}
     </div>
-  </label>
+    
+    {/* Custom Toggle Switch */}
+    <div className={`relative w-14 h-8 rounded-full transition-colors duration-300 ease-in-out ${checked ? 'bg-indigo-600' : 'bg-slate-200 group-hover:bg-slate-300'}`}>
+        <div className={`absolute top-1 left-1 bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${checked ? 'translate-x-6' : 'translate-x-0'}`}></div>
+    </div>
+  </div>
 );
 
 export const OptionsStep: React.FC<OptionsStepProps> = ({ config, onConfigChange }) => {
   return (
-    <div className="space-y-4">
-      <h3 className="text-xl font-semibold text-slate-700">Дополнительные опции</h3>
-      <p className="text-slate-500">Все опции включены по умолчанию для вашего удобства.</p>
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-xl font-bold text-slate-900">Комплектация</h3>
+        <p className="text-slate-500 mt-1">Выберите дополнительные опции для вашего проекта</p>
+      </div>
       
-      <div className="space-y-3">
-        <CheckboxOption
+      <div className="grid grid-cols-1 gap-4">
+        <ToggleOption
           id="hasBattery"
-          label="АКБ (Аккумулятор)"
-          description="Обеспечивает работу двери при отключении электроэнергии."
+          label="Резервное питание (АКБ)"
+          description="Автоматическое открытие или закрытие при отключении электричества."
           checked={config.hasBattery}
           onChange={onConfigChange}
         />
-        <CheckboxOption
+        <ToggleOption
           id="hasLock"
-          label="Электро-магнитный замок"
-          description="Надежно запирает створки в закрытом положении."
+          label="Электромагнитный замок"
+          description="Блокировка створок в закрытом режиме (режим «Ночь»)."
           checked={config.hasLock}
           onChange={onConfigChange}
         />
-        <CheckboxOption
+        <ToggleOption
           id="hasFilling"
           label="Заполнение (Стеклопакет)"
           description="Установка закаленного стеклопакета в створки."
           checked={config.hasFilling}
           onChange={onConfigChange}
         />
-        <CheckboxOption
+        <ToggleOption
           id="hasPainting"
-          label="Покраска по RAL"
-          description="Окрашивание профиля в любой цвет по каталогу RAL."
+          label="Покраска профиля (RAL)"
+          description="Порошковая покраска алюминиевого профиля в любой цвет."
           checked={config.hasPainting}
           onChange={onConfigChange}
         />

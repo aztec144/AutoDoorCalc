@@ -31,7 +31,6 @@ const App: React.FC = () => {
   const [prices, setPrices] = useState<Prices>({ itemPrice: 0, totalPrice: 0 });
   const [animationClass, setAnimationClass] = useState('animate__fadeIn');
   const [errors, setErrors] = useState<{ width?: string; height?: string }>({});
-  const [isLargePriceApplied, setIsLargePriceApplied] = useState(false);
   const mainRef = useRef<HTMLElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
   const [isSummaryVisibleOnMobile, setIsSummaryVisibleOnMobile] = useState(false);
@@ -96,8 +95,6 @@ const App: React.FC = () => {
       region, hasInstallation
     } = configuration;
 
-    let isLarge = false;
-
     // P_База
     const priceData = BASE_PRICES[doorType][manufacturer];
     let basePrice: number;
@@ -105,7 +102,6 @@ const App: React.FC = () => {
     // Проверяем, является ли дверь двухстворчатой, есть ли для нее цена large и превышает ли ширина порог
     if (doorType === DoorType.SlidingDoubleLeaf && priceData.large && width > 1500) {
       basePrice = priceData.large;
-      isLarge = true;
     } else {
       basePrice = priceData.base;
     }
@@ -140,7 +136,6 @@ const App: React.FC = () => {
     const totalPrice = (itemPrice * quantity) + (installationPrice * quantity);
 
     setPrices({ itemPrice, totalPrice });
-    setIsLargePriceApplied(isLarge);
   }, [configuration]);
 
   const validateDimensions = useCallback((config: Configuration) => {
@@ -149,12 +144,12 @@ const App: React.FC = () => {
 
     const heightLimits = DIMENSION_LIMITS.height[manufacturer];
     if (height < heightLimits.min || height > heightLimits.max) {
-      newErrors.height = `Высота для ${manufacturer} должна быть от ${heightLimits.min} до ${heightLimits.max} мм.`;
+      newErrors.height = `Высота: от ${heightLimits.min} до ${heightLimits.max} мм.`;
     }
 
     const widthLimits = DIMENSION_LIMITS.width[doorType];
     if (width < widthLimits.min || width > widthLimits.max) {
-      newErrors.width = `Ширина для "${doorType}" должна быть от ${widthLimits.min} до ${widthLimits.max} мм.`;
+      newErrors.width = `Ширина: от ${widthLimits.min} до ${widthLimits.max} мм.`;
     }
 
     setErrors(newErrors);
@@ -188,62 +183,69 @@ const App: React.FC = () => {
   const isSummaryHiddenOnMobile = currentStep < TOTAL_STEPS || !isSummaryVisibleOnMobile;
 
   return (
-    <div className="min-h-screen font-sans flex items-center justify-center p-4 bg-slate-100">
-      <main ref={mainRef} className="w-full max-w-6xl mx-auto bg-white rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+    <div className="min-h-screen font-sans flex items-center justify-center p-4 md:p-6 bg-gray-50">
+      <main ref={mainRef} className="w-full max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[800px]">
         
-        <div className="p-6 md:p-8 flex flex-col">
-          <header className="mb-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-slate-800">Калькулятор стоимости</h1>
-            <p className="text-slate-500 mt-2">Рассчитайте предварительную стоимость автоматических дверей</p>
+        {/* Left Side: Form */}
+        <div className="lg:col-span-8 p-6 md:p-10 flex flex-col relative">
+          <header className="mb-8 md:mb-10">
+            <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Калькулятор стоимости</h1>
+            <p className="text-slate-500 mt-2 text-lg">Рассчитайте предварительную стоимость автоматических дверей за 4 шага</p>
           </header>
           
-          <StepIndicator currentStep={currentStep} />
+          <div className="mb-10">
+            <StepIndicator currentStep={currentStep} />
+          </div>
           
-          <div className={`flex-grow mt-6 min-h-[24rem] animate__animated ${animationClass}`}>
+          <div className={`flex-grow animate__animated ${animationClass}`}>
             {renderStep()}
           </div>
           
-          <div className="mt-8 flex justify-between items-center">
+          <div className="mt-12 flex justify-between items-center pt-6 border-t border-slate-100">
             {currentStep > 1 ? (
               <button
                 onClick={handlePrev}
-                className="px-6 py-2 bg-slate-200 text-slate-700 font-semibold rounded-lg shadow-sm hover:bg-slate-300 transition-colors"
+                className="px-8 py-3 text-slate-600 font-medium rounded-xl hover:bg-slate-50 hover:text-slate-900 transition-all duration-200 flex items-center"
               >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path></svg>
                 Назад
               </button>
             ) : (
-              <div /> // Placeholder to keep "Далее" button on the right
+              <div /> 
             )}
 
-            {currentStep < TOTAL_STEPS && (
-              <button
-                onClick={handleNext}
-                disabled={isNextDisabled}
-                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Далее
-              </button>
-            )}
-
-            {currentStep === TOTAL_STEPS && !isSummaryVisibleOnMobile && (
-              <button
-                onClick={showSummaryOnMobile}
-                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors lg:hidden"
-              >
-                Ваш расчет
-              </button>
-            )}
+            <div className="flex space-x-4">
+                {currentStep === TOTAL_STEPS && !isSummaryVisibleOnMobile && (
+                  <button
+                    onClick={showSummaryOnMobile}
+                    className="px-6 py-3 bg-slate-800 text-white font-semibold rounded-xl shadow-lg hover:bg-slate-700 transition-colors lg:hidden"
+                  >
+                    Итог
+                  </button>
+                )}
+                
+                {currentStep < TOTAL_STEPS && (
+                <button
+                    onClick={handleNext}
+                    disabled={isNextDisabled}
+                    className="px-8 py-3 bg-indigo-600 text-white font-semibold rounded-xl shadow-lg hover:bg-indigo-500 hover:shadow-indigo-200 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none flex items-center"
+                >
+                    Далее
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+                )}
+            </div>
           </div>
         </div>
         
-        <div ref={summaryRef} className={`bg-slate-100 p-6 md:p-8 ${isSummaryHiddenOnMobile ? 'hidden' : ''} lg:block`}>
+        {/* Right Side: Summary (Dark Mode) */}
+        <div ref={summaryRef} className={`lg:col-span-4 bg-slate-900 p-6 md:p-10 text-white flex flex-col ${isSummaryHiddenOnMobile ? 'hidden' : ''} lg:flex transition-all duration-500`}>
           <CalculationSummary 
             prices={prices} 
             config={configuration} 
             onReset={handleReset} 
             currentStep={currentStep}
             totalSteps={TOTAL_STEPS}
-            isLargePriceApplied={isLargePriceApplied}
           />
         </div>
       </main>
